@@ -30,3 +30,6 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Plan de implementacion ###
+plan_de_implementacion_app_de_comida.md

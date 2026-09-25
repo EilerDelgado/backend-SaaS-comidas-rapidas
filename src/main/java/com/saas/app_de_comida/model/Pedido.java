@@ -1,6 +1,6 @@
 package com.saas.app_de_comida.model;
 
-import com.saas.app_de_comida.model.enums.PaymentMethod;
+import com.saas.app_de_comida.model.enums.MetodoPago;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -28,9 +28,9 @@ public class Pedido {
     @Column(name = "total", nullable = false)
     private BigDecimal total;
 
-    @Column(name = "PaymentMethod", nullable = false)
+    @Column(name = "metodo_pago", nullable = false)
     @Enumerated(EnumType.STRING)
-    private PaymentMethod paymentMethod;
+    private MetodoPago metodoPago;
 
     @ManyToOne
     @JoinColumn(name = "fk_usuario", referencedColumnName = "id")
