@@ -32,7 +32,7 @@ public class DetallePedido {
     private Pedido pedido;
 
     @ManyToOne
-    @JoinColumn(name = "fk_producto", referencedColumnName = "id")
+    @JoinColumn(name = "fk_producto", referencedColumnName = "codigo")
     private Producto producto;
 
 }

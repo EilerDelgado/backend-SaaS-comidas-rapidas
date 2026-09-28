@@ -17,10 +17,15 @@ import java.math.BigDecimal;
 public class Producto {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
-
-    @Column(name = "codigo", nullable = false, unique = true)
+    @GeneratedValue(generator = "prefixed-code")
+    @org.hibernate.annotations.GenericGenerator(
+        name = "prefixed-code",
+        strategy = "com.saas.app_de_comida.util.PrefixedCodeGenerator",
+        parameters = {
+            @org.hibernate.annotations.Parameter(name = "prefix", value = "PRD")
+        }
+    )
+    @Column(name = "codigo", nullable = false, unique = true, updatable = false)
     private String codigo;
 
     @Column(name = "nombre", nullable = false, unique = false)

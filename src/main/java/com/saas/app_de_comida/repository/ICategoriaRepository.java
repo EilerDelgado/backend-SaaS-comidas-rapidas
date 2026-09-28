@@ -4,4 +4,5 @@ import com.saas.app_de_comida.model.Categoria;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ICategoriaRepository extends JpaRepository<Categoria, Integer> {
+    boolean existsByNombre(String nombre);
 }
