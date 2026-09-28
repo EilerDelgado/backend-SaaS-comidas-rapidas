@@ -27,8 +27,14 @@ public class Caja {
     @Column(name = "total_efectivo", nullable = false)
     private BigDecimal totalEfectivo;
 
-    @Column(name = "total_nequi", nullable = false)
-    private BigDecimal totalNequi;
+    @Column(name = "total_tarjeta_credito", nullable = false)
+    private BigDecimal totalTarjetaCredito;
+
+    @Column(name = "total_tarjeta_debito", nullable = false)
+    private BigDecimal totalTarjetaDebito;
+
+    @Column(name = "total_transferencia", nullable = false)
+    private BigDecimal totalTransferencia;
 
     @Column(name = "fecha_apertura", nullable = false)
     private LocalDateTime fechaApertura;
@@ -38,4 +44,8 @@ public class Caja {
 
     @Column(name = "abierta", nullable = false)
     private boolean abierta;
+
+    @ManyToOne
+    @JoinColumn(name = "fk_restaurante", referencedColumnName = "id", nullable = false)
+    private Restaurante restaurante;
 }

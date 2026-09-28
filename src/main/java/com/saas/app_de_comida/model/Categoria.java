@@ -18,7 +18,10 @@ public class Categoria {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "nombre", nullable = false, unique = true)
+    @Column(name = "nombre", nullable = false)
     private String nombre;
 
+    @ManyToOne
+    @JoinColumn(name = "fk_restaurante", referencedColumnName = "id", nullable = false)
+    private Restaurante restaurante;
 }

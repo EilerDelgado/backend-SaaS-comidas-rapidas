@@ -5,7 +5,9 @@ import com.saas.app_de_comida.dto.usuario.UsuarioResponseDTO;
 import com.saas.app_de_comida.exception.DuplicateResourceException;
 import com.saas.app_de_comida.exception.ResourceNotFoundException;
 import com.saas.app_de_comida.mapper.UsuarioMapper;
+import com.saas.app_de_comida.model.Restaurante;
 import com.saas.app_de_comida.model.Usuario;
+import com.saas.app_de_comida.repository.IRestauranteRepository;
 import com.saas.app_de_comida.repository.IUsuarioRepository;
 import com.saas.app_de_comida.service.UsuarioService;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +22,7 @@ import java.util.stream.Collectors;
 public class UsuarioServiceImpl implements UsuarioService {
 
     private final IUsuarioRepository usuarioRepository;
+    private final IRestauranteRepository restauranteRepository;
     private final UsuarioMapper usuarioMapper;
 
     @Override
@@ -30,9 +33,14 @@ public class UsuarioServiceImpl implements UsuarioService {
         }
 
         Usuario usuario = usuarioMapper.toEntity(request);
-        // En la fase 5 (Seguridad) se debe encriptar la contrasena antes de guardar
-        Usuario savedUsuario = usuarioRepository.save(usuario);
         
+        if (request.getRestauranteId() != null) {
+            Restaurante restaurante = restauranteRepository.findById(request.getRestauranteId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Restaurante", request.getRestauranteId()));
+            usuario.setRestaurante(restaurante);
+        }
+
+        Usuario savedUsuario = usuarioRepository.save(usuario);
         return usuarioMapper.toDTO(savedUsuario);
     }
 
@@ -65,7 +73,14 @@ public class UsuarioServiceImpl implements UsuarioService {
         usuario.setCorreo(request.getCorreo());
         usuario.setRol(request.getRol());
         
-        // Actualizar la contraseña solo si se envía en el DTO 
+        if (request.getRestauranteId() != null) {
+            Restaurante restaurante = restauranteRepository.findById(request.getRestauranteId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Restaurante", request.getRestauranteId()));
+            usuario.setRestaurante(restaurante);
+        } else {
+            usuario.setRestaurante(null);
+        }
+        
         if (request.getContrasena() != null && !request.getContrasena().trim().isEmpty()) {
             usuario.setContrasena(request.getContrasena());
         }

@@ -6,8 +6,10 @@ import com.saas.app_de_comida.exception.ResourceNotFoundException;
 import com.saas.app_de_comida.mapper.ProductoMapper;
 import com.saas.app_de_comida.model.Categoria;
 import com.saas.app_de_comida.model.Producto;
+import com.saas.app_de_comida.model.Restaurante;
 import com.saas.app_de_comida.repository.ICategoriaRepository;
 import com.saas.app_de_comida.repository.IProductoRepository;
+import com.saas.app_de_comida.repository.IRestauranteRepository;
 import com.saas.app_de_comida.service.ProductoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -22,6 +24,7 @@ public class ProductoServiceImpl implements ProductoService {
 
     private final IProductoRepository productoRepository;
     private final ICategoriaRepository categoriaRepository;
+    private final IRestauranteRepository restauranteRepository;
     private final ProductoMapper productoMapper;
 
     @Override
@@ -29,10 +32,14 @@ public class ProductoServiceImpl implements ProductoService {
     public ProductoResponseDTO create(ProductoRequestDTO request) {
         Categoria categoria = categoriaRepository.findById(request.getCategoriaId())
                 .orElseThrow(() -> new ResourceNotFoundException("Categoría", request.getCategoriaId()));
+                
+        Restaurante restaurante = restauranteRepository.findById(request.getRestauranteId())
+                .orElseThrow(() -> new ResourceNotFoundException("Restaurante", request.getRestauranteId()));
 
         Producto producto = productoMapper.toEntity(request);
-        producto.setDisponibilidad(true); // Al crear, por defecto está disponible
+        producto.setDisponibilidad(true);
         producto.setCategoriaProducto(categoria);
+        producto.setRestaurante(restaurante);
 
         Producto savedProducto = productoRepository.save(producto);
         return productoMapper.toDTO(savedProducto);
@@ -60,12 +67,15 @@ public class ProductoServiceImpl implements ProductoService {
 
         Categoria categoria = categoriaRepository.findById(request.getCategoriaId())
                 .orElseThrow(() -> new ResourceNotFoundException("Categoría", request.getCategoriaId()));
+                
+        Restaurante restaurante = restauranteRepository.findById(request.getRestauranteId())
+                .orElseThrow(() -> new ResourceNotFoundException("Restaurante", request.getRestauranteId()));
 
-        // El código no se modifica porque es generado y único
         producto.setNombre(request.getNombre());
         producto.setDescripcion(request.getDescripcion());
         producto.setPrecio(request.getPrecio());
         producto.setCategoriaProducto(categoria);
+        producto.setRestaurante(restaurante);
 
         Producto updatedProducto = productoRepository.save(producto);
         return productoMapper.toDTO(updatedProducto);

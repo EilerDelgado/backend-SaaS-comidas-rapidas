@@ -6,7 +6,9 @@ import com.saas.app_de_comida.exception.DuplicateResourceException;
 import com.saas.app_de_comida.exception.ResourceNotFoundException;
 import com.saas.app_de_comida.mapper.CategoriaMapper;
 import com.saas.app_de_comida.model.Categoria;
+import com.saas.app_de_comida.model.Restaurante;
 import com.saas.app_de_comida.repository.ICategoriaRepository;
+import com.saas.app_de_comida.repository.IRestauranteRepository;
 import com.saas.app_de_comida.service.CategoriaService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,15 +22,21 @@ import java.util.stream.Collectors;
 public class CategoriaServiceImpl implements CategoriaService {
 
     private final ICategoriaRepository categoriaRepository;
+    private final IRestauranteRepository restauranteRepository;
     private final CategoriaMapper categoriaMapper;
 
     @Override
     @Transactional
     public CategoriaResponseDTO create(CategoriaRequestDTO request) {
-        if (categoriaRepository.existsByNombre(request.getNombre())) {
-            throw new DuplicateResourceException("Ya existe una categoría con el nombre: " + request.getNombre());
+        Restaurante restaurante = restauranteRepository.findById(request.getRestauranteId())
+                .orElseThrow(() -> new ResourceNotFoundException("Restaurante", request.getRestauranteId()));
+
+        if (categoriaRepository.existsByNombreAndRestauranteId(request.getNombre(), restaurante.getId())) {
+            throw new DuplicateResourceException("Ya existe una categoría con el nombre en este restaurante.");
         }
         Categoria categoria = categoriaMapper.toEntity(request);
+        categoria.setRestaurante(restaurante);
+
         Categoria savedCategoria = categoriaRepository.save(categoria);
         return categoriaMapper.toDTO(savedCategoria);
     }
@@ -52,13 +60,17 @@ public class CategoriaServiceImpl implements CategoriaService {
     @Transactional
     public CategoriaResponseDTO update(Integer id, CategoriaRequestDTO request) {
         Categoria categoria = getCategoriaById(id);
+        Restaurante restaurante = restauranteRepository.findById(request.getRestauranteId())
+                .orElseThrow(() -> new ResourceNotFoundException("Restaurante", request.getRestauranteId()));
 
         if (!categoria.getNombre().equals(request.getNombre()) && 
-            categoriaRepository.existsByNombre(request.getNombre())) {
-            throw new DuplicateResourceException("Ya existe una categoría con el nombre: " + request.getNombre());
+            categoriaRepository.existsByNombreAndRestauranteId(request.getNombre(), restaurante.getId())) {
+            throw new DuplicateResourceException("Ya existe una categoría con el nombre en este restaurante.");
         }
 
         categoria.setNombre(request.getNombre());
+        categoria.setRestaurante(restaurante);
+
         Categoria updatedCategoria = categoriaRepository.save(categoria);
         return categoriaMapper.toDTO(updatedCategoria);
     }

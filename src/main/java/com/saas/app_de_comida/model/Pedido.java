@@ -33,6 +33,17 @@ public class Pedido {
     private MetodoPago metodoPago;
 
     @ManyToOne
-    @JoinColumn(name = "fk_usuario", referencedColumnName = "id")
-    private Usuario usuario;
+    @JoinColumn(name = "fk_cliente", referencedColumnName = "id", nullable = true)
+    private Usuario cliente;
+
+    @ManyToOne
+    @JoinColumn(name = "fk_cajero", referencedColumnName = "id", nullable = true)
+    private Usuario cajero;
+
+    @Column(name = "nombre_cliente_local", nullable = true)
+    private String nombreClienteLocal;
+
+    @ManyToOne
+    @JoinColumn(name = "fk_restaurante", referencedColumnName = "id", nullable = false)
+    private Restaurante restaurante;
 }

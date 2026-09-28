@@ -25,4 +25,7 @@ public class UsuarioRequestDTO {
 
     @NotNull(message = "El rol es obligatorio")
     private Role rol;
+
+    // Puede ser nulo si es un SUPER_ADMIN o un CLIENTE global
+    private Integer restauranteId;
 }

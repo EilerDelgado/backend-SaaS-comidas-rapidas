@@ -43,4 +43,8 @@ public class Producto {
     @ManyToOne
     @JoinColumn(name = "fk_categoria", referencedColumnName = "id")
     private Categoria categoriaProducto;
+
+    @ManyToOne
+    @JoinColumn(name = "fk_restaurante", referencedColumnName = "id", nullable = false)
+    private Restaurante restaurante;
 }

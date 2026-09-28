@@ -24,4 +24,7 @@ public class ProductoRequestDTO {
 
     @NotNull(message = "El ID de la categoría es obligatorio")
     private Integer categoriaId;
+
+    @NotNull(message = "El ID del restaurante es obligatorio")
+    private Integer restauranteId;
 }

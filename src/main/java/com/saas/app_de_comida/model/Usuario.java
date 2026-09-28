@@ -32,4 +32,7 @@ public class Usuario {
     @Enumerated(EnumType.STRING)
     private Role rol;
 
+    @ManyToOne
+    @JoinColumn(name = "fk_restaurante", referencedColumnName = "id", nullable = true)
+    private Restaurante restaurante;
 }
