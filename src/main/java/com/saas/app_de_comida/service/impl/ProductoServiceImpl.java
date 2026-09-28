@@ -2,7 +2,6 @@ package com.saas.app_de_comida.service.impl;
 
 import com.saas.app_de_comida.dto.producto.ProductoRequestDTO;
 import com.saas.app_de_comida.dto.producto.ProductoResponseDTO;
-import com.saas.app_de_comida.exception.DuplicateResourceException;
 import com.saas.app_de_comida.exception.ResourceNotFoundException;
 import com.saas.app_de_comida.mapper.ProductoMapper;
 import com.saas.app_de_comida.model.Categoria;

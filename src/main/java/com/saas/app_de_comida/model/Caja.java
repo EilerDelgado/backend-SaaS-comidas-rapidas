@@ -38,5 +38,4 @@ public class Caja {
 
     @Column(name = "abierta", nullable = false)
     private boolean abierta;
-
-    }
+}
