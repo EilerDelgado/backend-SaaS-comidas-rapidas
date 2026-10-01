@@ -11,6 +11,7 @@ import com.saas.app_de_comida.repository.IRestauranteRepository;
 import com.saas.app_de_comida.repository.IUsuarioRepository;
 import com.saas.app_de_comida.service.UsuarioService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,6 +25,7 @@ public class UsuarioServiceImpl implements UsuarioService {
     private final IUsuarioRepository usuarioRepository;
     private final IRestauranteRepository restauranteRepository;
     private final UsuarioMapper usuarioMapper;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     @Transactional
@@ -33,6 +35,9 @@ public class UsuarioServiceImpl implements UsuarioService {
         }
 
         Usuario usuario = usuarioMapper.toEntity(request);
+        
+        // Hashear contraseña antes de guardar
+        usuario.setContrasena(passwordEncoder.encode(request.getContrasena()));
         
         if (request.getRestauranteId() != null) {
             Restaurante restaurante = restauranteRepository.findById(request.getRestauranteId())
@@ -82,7 +87,7 @@ public class UsuarioServiceImpl implements UsuarioService {
         }
         
         if (request.getContrasena() != null && !request.getContrasena().trim().isEmpty()) {
-            usuario.setContrasena(request.getContrasena());
+            usuario.setContrasena(passwordEncoder.encode(request.getContrasena()));
         }
 
         Usuario updatedUsuario = usuarioRepository.save(usuario);
