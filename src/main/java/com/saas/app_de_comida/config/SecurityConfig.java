@@ -40,10 +40,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/error").permitAll()
-                        // Aquí se podrían asegurar los endpoints progresivamente
-                        // Por ahora los dejamos abiertos o los cerramos dependiendo del enfoque
-                        // Como estamos en Fase 5, cerremos todo menos Auth, pero permitamos endpoints públicos si los hay
-                        // Vamos a asegurar el resto de la API:
+                        .requestMatchers("/api/usuarios/admin").hasRole("SUPER_ADMIN")
+                        .requestMatchers("/api/usuarios/cocinero").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session

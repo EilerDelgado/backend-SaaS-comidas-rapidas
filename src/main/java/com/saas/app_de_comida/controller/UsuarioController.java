@@ -23,6 +23,27 @@ public class UsuarioController {
         return new ResponseEntity<>(usuarioService.create(request), HttpStatus.CREATED);
     }
 
+    @PostMapping("/admin")
+    public ResponseEntity<UsuarioResponseDTO> createAdmin(@Valid @RequestBody UsuarioRequestDTO request) {
+        return new ResponseEntity<>(usuarioService.createAdmin(request), HttpStatus.CREATED);
+    }
+
+    @PostMapping("/cocinero")
+    public ResponseEntity<UsuarioResponseDTO> createCocinero(
+            @Valid @RequestBody UsuarioRequestDTO request, 
+            org.springframework.security.core.Authentication authentication) {
+        
+        com.saas.app_de_comida.security.UserDetailsImpl userDetails = 
+                (com.saas.app_de_comida.security.UserDetailsImpl) authentication.getPrincipal();
+        
+        Integer adminRestauranteId = null;
+        if (userDetails.getUsuario().getRestaurante() != null) {
+            adminRestauranteId = userDetails.getUsuario().getRestaurante().getId();
+        }
+
+        return new ResponseEntity<>(usuarioService.createCocinero(request, adminRestauranteId), HttpStatus.CREATED);
+    }
+
     @GetMapping
     public ResponseEntity<List<UsuarioResponseDTO>> findAll() {
         return ResponseEntity.ok(usuarioService.findAll());

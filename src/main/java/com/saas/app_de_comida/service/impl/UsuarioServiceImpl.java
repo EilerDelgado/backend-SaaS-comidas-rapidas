@@ -50,6 +50,69 @@ public class UsuarioServiceImpl implements UsuarioService {
     }
 
     @Override
+    @Transactional
+    public UsuarioResponseDTO registerCliente(com.saas.app_de_comida.dto.auth.AuthRegisterDTO request) {
+        if (usuarioRepository.existsByCorreo(request.getCorreo())) {
+            throw new DuplicateResourceException("Ya existe un usuario con el correo: " + request.getCorreo());
+        }
+
+        Usuario usuario = new Usuario();
+        usuario.setNombre(request.getNombre());
+        usuario.setCorreo(request.getCorreo());
+        usuario.setContrasena(passwordEncoder.encode(request.getContrasena()));
+        usuario.setRol(com.saas.app_de_comida.model.enums.Role.CLIENTE);
+        // Cliente no tiene restaurante asignado
+        
+        Usuario savedUsuario = usuarioRepository.save(usuario);
+        return usuarioMapper.toDTO(savedUsuario);
+    }
+
+    @Override
+    @Transactional
+    public UsuarioResponseDTO createAdmin(UsuarioRequestDTO request) {
+        if (usuarioRepository.existsByCorreo(request.getCorreo())) {
+            throw new DuplicateResourceException("Ya existe un usuario con el correo: " + request.getCorreo());
+        }
+
+        Usuario usuario = usuarioMapper.toEntity(request);
+        usuario.setContrasena(passwordEncoder.encode(request.getContrasena()));
+        usuario.setRol(com.saas.app_de_comida.model.enums.Role.ADMIN); // Ignorar el rol que envíen, forzar ADMIN
+
+        if (request.getRestauranteId() != null) {
+            Restaurante restaurante = restauranteRepository.findById(request.getRestauranteId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Restaurante", request.getRestauranteId()));
+            usuario.setRestaurante(restaurante);
+        }
+
+        Usuario savedUsuario = usuarioRepository.save(usuario);
+        return usuarioMapper.toDTO(savedUsuario);
+    }
+
+    @Override
+    @Transactional
+    public UsuarioResponseDTO createCocinero(UsuarioRequestDTO request, Integer adminRestauranteId) {
+        if (usuarioRepository.existsByCorreo(request.getCorreo())) {
+            throw new DuplicateResourceException("Ya existe un usuario con el correo: " + request.getCorreo());
+        }
+
+        Usuario usuario = usuarioMapper.toEntity(request);
+        usuario.setContrasena(passwordEncoder.encode(request.getContrasena()));
+        usuario.setRol(com.saas.app_de_comida.model.enums.Role.COCINA); // Forzar rol COCINA
+
+        // Asignar el restaurante del admin directamente
+        if (adminRestauranteId != null) {
+            Restaurante restaurante = restauranteRepository.findById(adminRestauranteId)
+                    .orElseThrow(() -> new ResourceNotFoundException("Restaurante", adminRestauranteId));
+            usuario.setRestaurante(restaurante);
+        } else {
+            throw new IllegalArgumentException("El administrador que crea al cocinero debe pertenecer a un restaurante.");
+        }
+
+        Usuario savedUsuario = usuarioRepository.save(usuario);
+        return usuarioMapper.toDTO(savedUsuario);
+    }
+
+    @Override
     @Transactional(readOnly = true)
     public List<UsuarioResponseDTO> findAll() {
         return usuarioRepository.findAll().stream()

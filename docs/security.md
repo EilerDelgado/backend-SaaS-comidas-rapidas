@@ -2,14 +2,30 @@
 
 El sistema implementará seguridad basada en tokens (JWT) y Spring Security.
 
-## Estado Actual (Temporal)
+## Estado Actual: Autenticación JWT y Roles (Fase 5.1 Completada)
 
-Actualmente, el proyecto cuenta con una configuración temporal (`SecurityConfig.java`) orientada a facilitar el desarrollo inicial (Fases 1-4):
-* Todas las rutas HTTP (`/**`) están permitidas sin necesidad de autenticación.
-* El mecanismo CSRF está deshabilitado.
-* Está configurado el CORS para permitir peticiones desde aplicaciones frontend de desarrollo local (`http://localhost:3000`, `http://localhost:5173`).
+El proyecto cuenta con un sistema de seguridad robusto configurado a través de `SecurityConfig.java`, utilizando **Spring Security** y **JSON Web Tokens (JWT)**. 
 
-**Esta configuración será sustituida en la Fase 5** por un flujo real de autenticación.
+### Filtros de Seguridad y Endpoints Protegidos
+El sistema opera en modo `STATELESS` (sin sesiones de servidor). Las reglas de autorización actuales son:
+* **Accesos Públicos (`permitAll`)**:
+  * `/api/auth/login`: Para obtener el token JWT.
+  * `/api/auth/registro-cliente`: Registro libre inyectando automáticamente el rol `CLIENTE`.
+* **Accesos Restringidos por Rol (`hasRole`)**:
+  * `/api/usuarios/admin`: Protegido. Solo accesible por un `SUPER_ADMIN`.
+  * `/api/usuarios/cocinero`: Protegido. Solo accesible por un `ADMIN` (el cual inyectará automáticamente su propio ID de restaurante al nuevo cocinero).
+* **Resto de la API (`authenticated`)**:
+  * Cualquier otra petición requiere obligatoriamente enviar un token JWT válido en la cabecera `Authorization: Bearer <token>`.
+
+### Estructura del Token JWT
+Al autenticarse, el backend genera un token que contiene `claims` (datos extra) útiles para el frontend, evitando peticiones redundantes. El payload del token contiene:
+* `sub` (Subject): Correo del usuario.
+* `id_usuario`: ID interno en la base de datos.
+* `rol`: Rol del usuario (ej. `CLIENTE`, `ADMIN`).
+* `restaurante_id`: ID del restaurante asociado (si aplica).
+
+### Configuración CORS
+Está habilitado para permitir peticiones desde clientes web locales (`http://localhost:3000` y `http://localhost:5173`) con credenciales y todos los métodos HTTP principales.
 
 ## Roles del Sistema
 

@@ -22,6 +22,12 @@ public class AuthController {
 
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
+    private final com.saas.app_de_comida.service.UsuarioService usuarioService;
+
+    @PostMapping("/registro-cliente")
+    public ResponseEntity<com.saas.app_de_comida.dto.usuario.UsuarioResponseDTO> registroCliente(@Valid @RequestBody com.saas.app_de_comida.dto.auth.AuthRegisterDTO request) {
+        return new ResponseEntity<>(usuarioService.registerCliente(request), org.springframework.http.HttpStatus.CREATED);
+    }
 
     @PostMapping("/login")
     public ResponseEntity<AuthResponseDTO> login(@Valid @RequestBody AuthRequestDTO request) {
@@ -35,8 +41,14 @@ public class AuthController {
 
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
         
-        String jwtToken = jwtService.generateToken(userDetails);
+        java.util.Map<String, Object> extraClaims = new java.util.HashMap<>();
+        extraClaims.put("id_usuario", userDetails.getUsuario().getId());
+        extraClaims.put("rol", userDetails.getUsuario().getRol().name());
+        if (userDetails.getUsuario().getRestaurante() != null) {
+            extraClaims.put("restaurante_id", userDetails.getUsuario().getRestaurante().getId());
+        }
 
+        String jwtToken = jwtService.generateToken(extraClaims, userDetails);
         AuthResponseDTO response = new AuthResponseDTO(
                 jwtToken,
                 userDetails.getUsuario().getId(),

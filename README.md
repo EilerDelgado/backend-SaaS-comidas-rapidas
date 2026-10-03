@@ -34,14 +34,19 @@ El sistema implementa una arquitectura multicapa estándar de Spring Boot:
 **Nota técnica:** Las entidades nunca se exponen directamente a través de los controllers. Se utilizan DTOs validados para transferir datos hacia y desde la capa de servicio.
 
 ## Estado actual
-El proyecto se encuentra en una **etapa inicial (Fase de auditoría y arquitectura)**. Las entidades base ya existen y se están construyendo progresivamente las funcionalidades principales.
+El proyecto ha completado la **Fase 5 (Seguridad, Autenticación JWT y Gestión de Roles)**. Se ha establecido una arquitectura sólida, CRUDs fundamentales y un sistema de control de accesos jerárquico basado en roles (SaaS).
 
 ### Funcionalidades implementadas:
 * Estructura base de entidades (Usuario, Producto, Categoria, Pedido, DetallePedido, Caja, Restaurante).
-* Interfaces de repositorios (JPA).
-* Servicios CRUD iniciales para Categoria, Producto y Usuario.
+* Servicios CRUD validados (Jakarta Validation) para Categoria, Producto y Usuario usando DTOs.
 * Manejo global de excepciones (`@RestControllerAdvice`).
-* Configuración básica de Seguridad (CORS para React y acceso público temporal).
+* **Seguridad y Autenticación (JWT):** Implementación de Spring Security sin estado (stateless) usando JSON Web Tokens.
+* **Control de Accesos por Roles:** 
+  * Registro público para `CLIENTE`.
+  * Creación exclusiva de `ADMIN` por el `SUPER_ADMIN`.
+  * Creación exclusiva de `COCINA` por parte del `ADMIN` local, inyectando automáticamente el contexto multi-tenant (ID de Restaurante).
+* Inicialización de datos de prueba (`DataInitializer`) para facilitar el testing.
+* Configuración de CORS preparada para consumir desde frontend (React/Vite).
 
 ## Información importante
 * Consulta la carpeta `docs/` para detalles específicos sobre arquitectura, base de datos y seguridad.
