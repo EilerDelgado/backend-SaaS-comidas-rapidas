@@ -28,7 +28,7 @@ public class DetallePedido {
     private BigDecimal precioUnitario;
 
     @ManyToOne
-    @JoinColumn(name = "fk_pedido", referencedColumnName = "id")
+    @JoinColumn(name = "fk_pedido", referencedColumnName = "codigo")
     private Pedido pedido;
 
     @ManyToOne
